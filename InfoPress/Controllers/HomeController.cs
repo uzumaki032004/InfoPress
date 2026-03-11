@@ -8,6 +8,8 @@ using InfoPress.Models;
 using InfoPress.Singleton;
 using InfoPress.Adapter;
 using InfoPress.Interfaces;
+using InfoPress.Composite;
+using InfoPress.Facade;
 
 namespace InfoPress.Controllers
 {
@@ -82,6 +84,26 @@ namespace InfoPress.Controllers
             imagineService.IncarcaImagine("stire.jpg");
 
             return Content("Imagine încărcată folosind Adapter.");
+        }
+        public IActionResult TestComposite()
+        {
+            CategorieCompusa stiri = new CategorieCompusa("Știri");
+
+            stiri.Adauga(new CategorieSimpla("Politică"));
+            stiri.Adauga(new CategorieSimpla("Economie"));
+            stiri.Adauga(new CategorieSimpla("Sport"));
+
+            stiri.Afiseaza();
+
+            return Content("Composite test executat.");
+        }
+        public IActionResult TestFacade()
+        {
+            PublicareArticolFacade facade = new PublicareArticolFacade();
+
+            facade.PublicaArticol();
+
+            return Content("Articol publicat folosind Façade.");
         }
     }
 }
