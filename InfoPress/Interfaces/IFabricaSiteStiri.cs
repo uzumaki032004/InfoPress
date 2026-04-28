@@ -1,11 +1,10 @@
-﻿using InfoPress.Interfaces;
+using InfoPress.Interfaces;
 
-namespace InfoPress.Fabrici
+namespace InfoPress.Interfaces
 {
     public interface IFabricaSiteStiri
     {
         IArticol CreeazaArticol();
-
         IComentariu CreeazaComentariu();
     }
 }

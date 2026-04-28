@@ -1,0 +1,50 @@
+@model IEnumerable<InfoPress.Models.NewsArticle>
+
+@{
+    ViewData["Title"] = "Portal Știri";
+}
+
+<div class="container py-5">
+    <!-- Featured Hero Section -->
+    <div class="hero-section text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <span class="badge bg-primary mb-3">Breaking News</span>
+                <h1 class="display-3 mb-4">Informația care contează, livrată cu integritate.</h1>
+                <p class="lead text-muted mb-5">Analize profunde, știri în timp real și reportaje exclusive din inima evenimentelor.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="#latest" class="btn btn-dark btn-lg px-4 rounded-pill">Ultimele știri</a>
+                    <a href="#" class="btn btn-outline-dark btn-lg px-4 rounded-pill">Abonamente</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Grid -->
+    <div id="latest" class="row g-5">
+        <div class="col-12">
+            <h2 class="mb-4 d-flex align-items-center">
+                <span class="bg-primary p-1 me-3 rounded-1" style="width: 10px; height: 35px; display: inline-block;"></span>
+                Ultimele Articole
+            </h2>
+        </div>
+        
+        @foreach (var article in Model)
+        {
+            <div class="col-lg-4 col-md-6">
+                <article class="news-card p-4 h-100 d-flex flex-column bg-white">
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <span class="text-primary fw-bold small text-uppercase">@article.Category</span>
+                        <time class="text-muted small">@article.CreatedDate.ToString("dd.MM.yyyy")</time>
+                    </div>
+                    <h3 class="h4 mb-3">@article.Title</h3>
+                    <p class="text-muted text-truncate-3 mb-4 flex-grow-1">@article.ContentText</p>
+                    <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                        <span class="small fw-bold">@article.Author</span>
+                        <a href="#" class="link-primary text-decoration-none fw-bold small">Citește tot <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+</div>

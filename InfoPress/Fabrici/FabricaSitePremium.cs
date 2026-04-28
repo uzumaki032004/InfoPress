@@ -3,16 +3,16 @@ using InfoPress.Models;
 
 namespace InfoPress.Fabrici
 {
-    public class FabricaSiteStiri : IFabricaSiteStiri
+    public class FabricaSitePremium : IFabricaSiteStiri
     {
         public IArticol CreeazaArticol()
         {
-            return new ArticolStireProdus();
+            return new ArticolPremium();
         }
 
         public IComentariu CreeazaComentariu()
         {
-            return new ComentariuArticol();
+            return new ComentariuPremium();
         }
     }
 }

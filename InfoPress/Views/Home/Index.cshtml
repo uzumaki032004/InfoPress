@@ -1,8 +1,32 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Despre InfoPress";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-5 my-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold mb-4">Pasiune pentru Adevăr.</h1>
+            <p class="lead text-muted mb-4">
+                InfoPress s-a născut din dorința de a oferi o sursă de informare curată, liberă de influențe comerciale sau politice. Suntem o echipă de jurnaliști independenți dedicați faptelor.
+            </p>
+            <div class="row g-4 mb-5">
+                <div class="col-6">
+                    <h3 class="fw-bold text-primary">100k+</h3>
+                    <p class="small text-muted">Cititori Lunari</p>
+                </div>
+                <div class="col-6">
+                    <h3 class="fw-bold text-primary">24/7</h3>
+                    <p class="small text-muted">Acoperire Live</p>
+                </div>
+            </div>
+            <a asp-controller="News" asp-action="Index" class="btn btn-primary btn-lg px-5 rounded-pill">Înapoi la știri</a>
+        </div>
+        <div class="col-lg-5 offset-lg-1 d-none d-lg-block">
+            <div class="p-5 bg-light rounded-5 text-center">
+                <i class="bi bi-journal-check display-1 text-primary-emphasis"></i>
+                <h4 class="mt-4">Integritate</h4>
+                <p class="text-muted">Fiecare articol trece printr-un proces riguros de fact-checking înainte de publicare.</p>
+            </div>
+        </div>
+    </div>
 </div>
