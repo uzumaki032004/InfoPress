@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - InfoPress</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/InfoPress.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -21,21 +22,21 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link active" asp-area="" asp-controller="News" asp-action="Index">Acasă</a>
+                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Toate" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index">Acasă</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Politică</a>
+                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Politica" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index" asp-route-category="Politica">Politică</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Economie</a>
+                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Economie" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index" asp-route-category="Economie">Economie</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Tehnologie</a>
+                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Tehnologie" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index" asp-route-category="Tehnologie">Tehnologie</a>
                         </li>
                         <li class="nav-item ms-lg-3">
-                            <button class="btn btn-primary rounded-pill px-4">Abonare</button>
+                            <button class="btn btn-primary rounded-pill px-4 shadow-sm">Abonare</button>
                         </li>
                     </ul>
                 </div>
@@ -47,21 +48,21 @@
         @RenderBody()
     </main>
 
-    <footer class="bg-dark text-white pt-5 pb-3">
+    <footer class="bg-dark text-white pt-5 pb-3 mt-5">
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-5">
                     <h5 class="fw-bold mb-3 text-primary">InfoPress</h5>
                     <p class="text-white-50 small pe-lg-5">
-                        Jurnalism de elită pentru cititori informați. Acoperim cele mai importante subiecte ale zilei cu obiectivitate și profesionalism.
+                        Jurnalism de elită pentru cititori informați. Acoperim cele mai importante subiecte ale zilei cu obiectivitate și profesionalism, folosind tehnologii de ultimă oră.
                     </p>
                 </div>
                 <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold mb-3">Link-uri</h6>
+                    <h6 class="fw-bold mb-3">Link-uri Rapide</h6>
                     <ul class="list-unstyled small text-white-50">
-                        <li class="mb-2"><a href="#" class="text-reset text-decoration-none">Confidențialitate</a></li>
-                        <li class="mb-2"><a href="#" class="text-reset text-decoration-none">Termeni și condiții</a></li>
-                        <li class="mb-2"><a asp-controller="Home" asp-action="Index" class="text-reset text-decoration-none">Despre noi</a></li>
+                        <li class="mb-2"><a href="#" class="text-reset text-decoration-none hover-primary">Confidențialitate</a></li>
+                        <li class="mb-2"><a href="#" class="text-reset text-decoration-none hover-primary">Termeni și condiții</a></li>
+                        <li class="mb-2"><a asp-controller="Home" asp-action="Index" class="text-reset text-decoration-none hover-primary">Despre proiect</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-4 col-6">
@@ -79,7 +80,7 @@
             </div>
             <hr class="my-4 border-secondary">
             <div class="text-center text-white-50 small">
-                &copy; 2026 InfoPress. Toate drepturile rezervate.
+                &copy; 2026 InfoPress - Arhitectură avansată cu Design Patterns.
             </div>
         </div>
     </footer>

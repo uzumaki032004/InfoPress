@@ -2,19 +2,31 @@
 
 @{
     ViewData["Title"] = "Portal Știri";
+    string currentSort = ViewData["CurrentSort"] as string ?? "date";
+    string currentCategory = ViewData["CurrentCategory"] as string ?? "Toate";
 }
 
 <div class="container py-5">
     <!-- Featured Hero Section -->
-    <div class="hero-section text-center">
+    <div class="hero-section text-center shadow-sm">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <span class="badge bg-primary mb-3">Breaking News</span>
-                <h1 class="display-3 mb-4">Informația care contează, livrată cu integritate.</h1>
-                <p class="lead text-muted mb-5">Analize profunde, știri în timp real și reportaje exclusive din inima evenimentelor.</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <a href="#latest" class="btn btn-dark btn-lg px-4 rounded-pill">Ultimele știri</a>
-                    <a href="#" class="btn btn-outline-dark btn-lg px-4 rounded-pill">Abonamente</a>
+                <span class="badge bg-primary mb-3">InfoPress News</span>
+                <h1 class="display-3 mb-4">@(currentCategory == "Toate" ? "Informația care contează." : $"Știri: {currentCategory}")</h1>
+                <p class="lead text-muted mb-5">Analize profunde și jurnalism de elită pentru subiecte de @currentCategory.ToLower().</p>
+                
+                <!-- STRATEGY UI: Sorting Options -->
+                <div class="d-flex justify-content-center gap-3 mb-4">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle rounded-pill px-4" type="button" data-bs-toggle="dropdown">
+                            Sortare după: @(currentSort == "title" ? "Titlu" : "Dată")
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="?sortBy=date&category=@currentCategory">Dată (Cele mai noi)</a></li>
+                            <li><a class="dropdown-item" href="?sortBy=title&category=@currentCategory">Titlu (Alfabetic)</a></li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-dark rounded-pill px-4" onclick="undoLastAction()">Anulează Bookmark <i class="bi bi-arrow-counterclockwise"></i></button>
                 </div>
             </div>
         </div>
@@ -22,35 +34,72 @@
 
     <!-- News Grid -->
     <div id="latest" class="row g-5">
-        <div class="col-12">
-            <h2 class="mb-4 d-flex align-items-center">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2 class="mb-0 d-flex align-items-center">
                 <span class="bg-primary p-1 me-3 rounded-1" style="width: 10px; height: 35px; display: inline-block;"></span>
-                Ultimele Articole
+                @(currentCategory == "Toate" ? "Ultimele Articole" : $"Articole din {currentCategory}")
             </h2>
+            <span class="text-muted">@Model.Count() rezultate găsite</span>
         </div>
         
-        @foreach (var article in Model)
+        @if (!Model.Any())
         {
-            <div class="col-lg-4 col-md-6">
-                <article class="news-card p-4 h-100 d-flex flex-column bg-white @(article.IsPremium ? "border-primary" : "")">
-                    <div class="mb-3 d-flex justify-content-between align-items-center">
-                        <div class="d-flex gap-2 align-items-center">
-                            <span class="text-primary fw-bold small text-uppercase">@article.Category</span>
-                            @if (article.IsPremium)
-                            {
-                                <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> PREMIUM</span>
-                            }
-                        </div>
-                        <time class="text-muted small">@article.CreatedDate.ToString("dd.MM.yyyy")</time>
-                    </div>
-                    <h3 class="h4 mb-3">@article.Title</h3>
-                    <p class="text-muted text-truncate-3 mb-4 flex-grow-1">@article.ContentText</p>
-                    <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
-                        <span class="small fw-bold">@article.Author</span>
-                        <a href="#" class="link-primary text-decoration-none fw-bold small">Citește tot <i class="bi bi-arrow-right"></i></a>
-                    </div>
-                </article>
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h3 class="mt-4">Niciun articol găsit în această categorie.</h3>
+                <a asp-action="Index" class="btn btn-primary mt-3 rounded-pill">Înapoi la toate știrile</a>
             </div>
+        }
+        else
+        {
+            @foreach (var article in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <article class="news-card p-4 h-100 d-flex flex-column bg-white @(article.IsPremium ? "border-primary" : "")">
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2 align-items-center">
+                                <span class="text-primary fw-bold small text-uppercase">@article.Category</span>
+                                @if (article.IsPremium)
+                                {
+                                    <span class="badge bg-warning text-dark shadow-sm"><i class="bi bi-star-fill"></i> PREMIUM</span>
+                                }
+                            </div>
+                            <!-- COMMAND UI: Bookmark Button -->
+                            <button class="btn btn-link p-0 text-muted hover-primary" onclick="bookmarkArticle(1)" title="Salvează articol">
+                                <i class="bi bi-bookmark-plus fs-5"></i>
+                            </button>
+                        </div>
+                        <h3 class="h4 mb-3">@article.Title</h3>
+                        <p class="text-muted text-truncate-3 mb-4 flex-grow-1">@article.ContentText</p>
+                        <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
+                            <div class="small">
+                                <i class="bi bi-person-circle me-1"></i> <strong>@article.Author</strong>
+                            </div>
+                            <a href="#" class="btn btn-link link-primary text-decoration-none fw-bold small p-0">Citește tot <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </article>
+                </div>
+            }
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function bookmarkArticle(id) {
+            fetch('/News/Bookmark/' + id, { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    alert(data.message);
+                });
+        }
+
+        function undoLastAction() {
+            fetch('/News/UndoBookmark', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    alert(data.message);
+                });
+        }
+    </script>
+}

@@ -12,41 +12,73 @@ namespace InfoPress.Services
 
         public NewsService()
         {
-            // Seed data
-            var a1 = new NewsArticle
+            // Seed data - Editorial
+            articles.Add(new NewsArticle
             {
-                Id = 1,
-                Title = "Lansarea InfoPress - O nouă eră în jurnalism",
-                ContentText = "Astăzi am lansat oficial platforma InfoPress, un portal dedicat știrilor de calitate și integrității jurnalistice.",
+                Title = "Lansarea InfoPress - O nouă eră",
+                ContentText = "Am lansat oficial platforma InfoPress, un portal dedicat integrității jurnalistice.",
                 Author = "Echipa InfoPress",
                 Category = "Editorial",
-                CreatedDate = DateTime.Now.AddDays(-2)
-            };
+                CreatedDate = DateTime.Now.AddDays(-5)
+            });
 
-            var a2 = new NewsArticle
+            // Seed data - Tehnologie
+            var tech1 = new NewsArticle
             {
-                Id = 2,
-                Title = "Inovații în Inteligența Artificială (Exclusiv)",
-                ContentText = "Noile modele de limbaj natural revoluționează modul în care interacționăm cu tehnologia. Acest articol conține detalii tehnice exclusive.",
+                Title = "Inovații în Inteligența Artificială",
+                ContentText = "Noile modele de limbaj natural revoluționează modul în care interacționăm cu tehnologia.",
                 Author = "Andrei Ionescu",
                 Category = "Tehnologie",
                 CreatedDate = DateTime.Now.AddDays(-1)
             };
+            articles.Add(new PremiumArticolDecorator(tech1)); // Premium
 
-            var a3 = new NewsArticle
+            articles.Add(new NewsArticle
             {
-                Id = 3,
-                Title = "Economia globală în 2026: Perspective",
-                ContentText = "Analiștii prevăd o creștere moderată a piețelor emergente în acest an.",
+                Title = "Viitorul Quantum Computing",
+                ContentText = "Calculatoarele cuantice promit să rezolve probleme imposibile pentru hardware-ul actual.",
+                Author = "Andrei Ionescu",
+                Category = "Tehnologie",
+                CreatedDate = DateTime.Now.AddDays(-2)
+            });
+
+            // Seed data - Politica
+            articles.Add(new NewsArticle
+            {
+                Title = "Alegerile Parlamentare 2026",
+                ContentText = "Sondajele recente arată o cursă strânsă între principalele formațiuni politice.",
+                Author = "Elena Radu",
+                Category = "Politica",
+                CreatedDate = DateTime.Now.AddDays(-3)
+            });
+
+            articles.Add(new NewsArticle
+            {
+                Title = "Reforma Administrativă în Discuție",
+                ContentText = "Guvernul a propus o nouă serie de măsuri pentru descentralizarea serviciilor publice.",
+                Author = "Elena Radu",
+                Category = "Politica",
+                CreatedDate = DateTime.Now.AddDays(-4)
+            });
+
+            // Seed data - Economie
+            articles.Add(new NewsArticle
+            {
+                Title = "Piața Imobiliară: Tendințe 2026",
+                ContentText = "Analiștii observă o stabilizare a prețurilor în marile centre urbane după o perioadă de volatilitate.",
+                Author = "Maria Popescu",
+                Category = "Economie",
+                CreatedDate = DateTime.Now.AddDays(-6)
+            });
+
+            articles.Add(new NewsArticle
+            {
+                Title = "Creștere Economică în Sectorul Tech",
+                ContentText = "Sectorul tehnologic continuă să fie principalul motor de creștere al economiei naționale.",
                 Author = "Maria Popescu",
                 Category = "Economie",
                 CreatedDate = DateTime.Now
-            };
-
-            articles.Add(a1);
-            // Aplicăm DECORATOR-ul pentru a face articolul 2 Premium
-            articles.Add(new PremiumArticolDecorator(a2));
-            articles.Add(a3);
+            });
         }
 
         public List<IArticol> GetAllArticles()
@@ -56,8 +88,7 @@ namespace InfoPress.Services
 
         public IArticol GetArticleById(int id)
         {
-            // Simulare simplă pentru id
-            return articles.Find(a => a.Title.Contains(id.ToString()));
+            return articles.Count > 0 ? articles[0] : null;
         }
 
         public void PublishArticle(NewsArticle article)
