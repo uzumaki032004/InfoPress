@@ -1,39 +1,46 @@
-﻿using InfoPress.Models;
+using InfoPress.Models;
 
 namespace InfoPress.Builder
 {
     public class ArticolBuilder : IArticolBuilder
     {
-        private Articol articol = new Articol();
+        private Articol _articol = new Articol();
 
-        public void SetTitlu(string titlu)
+        public IArticolBuilder SetTitlu(string titlu)
         {
-            articol.Titlu = titlu;
+            _articol.Titlu = titlu;
+            return this;
         }
 
-        public void SetAutor(string autor)
+        public IArticolBuilder SetAutor(string autor)
         {
-            articol.Autor = autor;
+            _articol.Autor = autor;
+            return this;
         }
 
-        public void SetContinut(string continut)
+        public IArticolBuilder SetContinut(string continut)
         {
-            articol.Continut = continut;
+            _articol.Continut = continut;
+            return this;
         }
 
-        public void SetCategorie(string categorie)
+        public IArticolBuilder SetCategorie(string categorie)
         {
-            articol.Categorie = categorie;
+            _articol.Categorie = categorie;
+            return this;
         }
 
-        public void SetImagine(string imagine)
+        public IArticolBuilder SetImagine(string imagine)
         {
-            articol.Imagine = imagine;
+            _articol.Imagine = imagine;
+            return this;
         }
 
         public Articol GetArticol()
         {
-            return articol;
+            Articol finalProduct = _articol;
+            _articol = new Articol(); // Reset for next build
+            return finalProduct;
         }
     }
 }

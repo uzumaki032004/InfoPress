@@ -1,14 +1,21 @@
-﻿namespace InfoPress.Builder
+namespace InfoPress.Builder
 {
     public class DirectorArticol
     {
         public void ConstruiesteArticolStire(IArticolBuilder builder)
         {
-            builder.SetTitlu("Știre importantă");
-            builder.SetAutor("Admin");
-            builder.SetContinut("Acesta este conținutul articolului.");
-            builder.SetCategorie("Actualitate");
-            builder.SetImagine("stire.jpg");
+            builder.SetTitlu("Știre importantă")
+                   .SetAutor("Admin")
+                   .SetContinut("Acesta este conținutul articolului construit pas cu pas.")
+                   .SetCategorie("Actualitate")
+                   .SetImagine("stire.jpg");
+        }
+
+        public void ConstruiesteArticolSportiv(IArticolBuilder builder)
+        {
+            builder.SetTitlu("Rezultate meciuri")
+                   .SetAutor("Redacția Sport")
+                   .SetCategorie("Sport");
         }
     }
 }

@@ -1,23 +1,34 @@
-﻿namespace InfoPress.Singleton
+namespace InfoPress.Singleton
 {
-    public class ManagerConfigurare
+    public sealed class ManagerConfigurare
     {
-        private static ManagerConfigurare instance;
+        private static ManagerConfigurare _instance = null;
+        private static readonly object _lock = new object();
 
         private ManagerConfigurare()
         {
+            // Inițializare setări implicite
+            NumeSite = "InfoPress";
+            Versiune = "1.0.0";
         }
 
         public static ManagerConfigurare GetInstance()
         {
-            if (instance == null)
+            // Thread-safe Singleton using double-check locking
+            if (_instance == null)
             {
-                instance = new ManagerConfigurare();
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new ManagerConfigurare();
+                    }
+                }
             }
-
-            return instance;
+            return _instance;
         }
 
-        public string NumeSite { get; set; } = "InfoPress";
+        public string NumeSite { get; set; }
+        public string Versiune { get; set; }
     }
 }

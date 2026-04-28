@@ -1,10 +1,15 @@
-﻿using InfoPress.Interfaces;
+using InfoPress.Interfaces;
 
 namespace InfoPress.Models
 {
-    public class ArticolStireProdus : IArticol
+    public class ArticolStireProdus : Content
     {
-        public void AfiseazaArticol()
+        public override void Publish()
+        {
+            // Logica de publicare
+        }
+
+        public override void AfiseazaArticol()
         {
             Console.WriteLine("Articol de stiri InfoPress");
         }

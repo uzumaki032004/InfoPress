@@ -1,16 +1,17 @@
-﻿namespace InfoPress.Models
+namespace InfoPress.Models
 {
     public class NewsArticle : Content
     {
         public int Id { get; set; }
 
-        public string Author { get; set; }
-
-        public string Category { get; set; }
-
         public override void Publish()
         {
-            Console.WriteLine("Article published.");
+            Console.WriteLine($"Articolul '{Title}' a fost publicat.");
+        }
+
+        public override void AfiseazaArticol()
+        {
+            Console.WriteLine($"Se afișează articolul: {Title}");
         }
     }
 }

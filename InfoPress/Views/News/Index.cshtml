@@ -1,4 +1,4 @@
-@model IEnumerable<InfoPress.Models.NewsArticle>
+@model IEnumerable<InfoPress.Interfaces.IArticol>
 
 @{
     ViewData["Title"] = "Portal Știri";
@@ -32,9 +32,15 @@
         @foreach (var article in Model)
         {
             <div class="col-lg-4 col-md-6">
-                <article class="news-card p-4 h-100 d-flex flex-column bg-white">
+                <article class="news-card p-4 h-100 d-flex flex-column bg-white @(article.IsPremium ? "border-primary" : "")">
                     <div class="mb-3 d-flex justify-content-between align-items-center">
-                        <span class="text-primary fw-bold small text-uppercase">@article.Category</span>
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="text-primary fw-bold small text-uppercase">@article.Category</span>
+                            @if (article.IsPremium)
+                            {
+                                <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> PREMIUM</span>
+                            }
+                        </div>
                         <time class="text-muted small">@article.CreatedDate.ToString("dd.MM.yyyy")</time>
                     </div>
                     <h3 class="h4 mb-3">@article.Title</h3>

@@ -2,9 +2,14 @@ using InfoPress.Interfaces;
 
 namespace InfoPress.Models
 {
-    public class ArticolPremium : IArticol
+    public class ArticolPremium : Content
     {
-        public void AfiseazaArticol()
+        public override void Publish()
+        {
+            // Logica de publicare premium
+        }
+
+        public override void AfiseazaArticol()
         {
             Console.WriteLine("[PREMIUM] Articol de știri cu acces exclusiv.");
         }

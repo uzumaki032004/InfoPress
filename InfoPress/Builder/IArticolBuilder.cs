@@ -1,19 +1,14 @@
-﻿using InfoPress.Models;
+using InfoPress.Models;
 
 namespace InfoPress.Builder
 {
     public interface IArticolBuilder
     {
-        void SetTitlu(string titlu);
-
-        void SetAutor(string autor);
-
-        void SetContinut(string continut);
-
-        void SetCategorie(string categorie);
-
-        void SetImagine(string imagine);
-
+        IArticolBuilder SetTitlu(string titlu);
+        IArticolBuilder SetAutor(string autor);
+        IArticolBuilder SetContinut(string continut);
+        IArticolBuilder SetCategorie(string categorie);
+        IArticolBuilder SetImagine(string imagine);
         Articol GetArticol();
     }
 }
