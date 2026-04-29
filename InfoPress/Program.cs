@@ -1,11 +1,25 @@
 using InfoPress.Interfaces;
 using InfoPress.Services;
+using InfoPress.Proxy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<INewsService, NewsService>();
+
+// PROXY DI: Înregistrare condiționată a Proxy-ului
+builder.Services.AddScoped<NewsService>();
+builder.Services.AddScoped<INewsService>(sp => {
+    var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+    var realService = sp.GetRequiredService<NewsService>();
+    
+    // Verificăm rolul din query string pentru demonstrație: ?role=Admin
+    string role = httpContext?.Request.Query["role"].ToString() ?? "Guest";
+    
+    return new NewsAccessProxy(realService, role);
+});
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -13,21 +27,15 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
 }
+app.UseStaticFiles();
 
-app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=News}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=News}/{action=Index}/{id?}");
 
 app.Run();

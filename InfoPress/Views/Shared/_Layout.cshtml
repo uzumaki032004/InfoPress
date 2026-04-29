@@ -1,3 +1,4 @@
+@using InfoPress.Helpers
 <!DOCTYPE html>
 <html lang="ro">
 <head>
@@ -24,19 +25,27 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                         <li class="nav-item">
-                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Toate" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index">Acasă</a>
+                            <a class="nav-link" asp-controller="News" asp-action="Index">Acasă</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Politica" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index" asp-route-category="Politica">Politică</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Economie" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index" asp-route-category="Economie">Economie</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewData["CurrentCategory"]?.ToString() == "Tehnologie" ? "fw-bold text-primary" : "")" asp-controller="News" asp-action="Index" asp-route-category="Tehnologie">Tehnologie</a>
-                        </li>
-                        <li class="nav-item ms-lg-3">
-                            <button class="btn btn-primary rounded-pill px-4 shadow-sm">Abonare</button>
+                        
+                        <!-- Categorii dinamice (Demonstrație Composite în spate) -->
+                        @foreach (var cat in CategoryManager.GetFlatCategories())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="News" asp-action="Index" asp-route-category="@cat">@cat</a>
+                            </li>
+                        }
+
+                        <li class="nav-item dropdown ms-lg-3">
+                            <a class="nav-link dropdown-toggle btn btn-outline-dark rounded-pill px-3" href="#" id="patternsDropdown" role="button" data-bs-toggle="dropdown">
+                                Demonstrații Patterns
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li><a class="dropdown-item" asp-controller="News" asp-action="Browse"><i class="bi bi-list-ol me-2"></i> Iterator - Navigare</a></li>
+                                <li><a class="dropdown-item" asp-controller="ArticleEditor" asp-action="Index"><i class="bi bi-pencil-square me-2"></i> Memento - Editor</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item fw-bold text-primary" asp-controller="Admin" asp-action="Index" asp-route-role="Admin"><i class="bi bi-shield-lock me-2"></i> Admin Panel (Proxy)</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -49,39 +58,8 @@
     </main>
 
     <footer class="bg-dark text-white pt-5 pb-3 mt-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-5">
-                    <h5 class="fw-bold mb-3 text-primary">InfoPress</h5>
-                    <p class="text-white-50 small pe-lg-5">
-                        Jurnalism de elită pentru cititori informați. Acoperim cele mai importante subiecte ale zilei cu obiectivitate și profesionalism, folosind tehnologii de ultimă oră.
-                    </p>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <h6 class="fw-bold mb-3">Link-uri Rapide</h6>
-                    <ul class="list-unstyled small text-white-50">
-                        <li class="mb-2"><a href="#" class="text-reset text-decoration-none hover-primary">Confidențialitate</a></li>
-                        <li class="mb-2"><a href="#" class="text-reset text-decoration-none hover-primary">Termeni și condiții</a></li>
-                        <li class="mb-2"><a asp-controller="Home" asp-action="Index" class="text-reset text-decoration-none hover-primary">Despre proiect</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-6">
-                    <h6 class="fw-bold mb-3">Contact</h6>
-                    <ul class="list-unstyled small text-white-50">
-                        <li class="mb-2"><i class="bi bi-geo-alt me-2"></i> București, România</li>
-                        <li class="mb-2"><i class="bi bi-envelope me-2"></i> contact@infopress.ro</li>
-                    </ul>
-                    <div class="d-flex gap-3 mt-3">
-                        <a href="#" class="text-white-50 fs-5"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-white-50 fs-5"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" class="text-white-50 fs-5"><i class="bi bi-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <hr class="my-4 border-secondary">
-            <div class="text-center text-white-50 small">
-                &copy; 2026 InfoPress - Arhitectură avansată cu Design Patterns.
-            </div>
+        <div class="container text-center text-white-50 small">
+            &copy; 2026 InfoPress - Arhitectură avansată cu Design Patterns.
         </div>
     </footer>
 

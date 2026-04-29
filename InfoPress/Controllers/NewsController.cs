@@ -2,6 +2,7 @@ using InfoPress.Interfaces;
 using InfoPress.Models;
 using InfoPress.Strategy;
 using InfoPress.Command;
+using InfoPress.Iterator;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,29 +22,33 @@ namespace InfoPress.Controllers
         public IActionResult Index(string sortBy = "date", string category = null)
         {
             var articles = _newsService.GetAllArticles();
-
-            // Filtrare după categorie (dacă este specificată)
             if (!string.IsNullOrEmpty(category))
             {
                 articles = articles.Where(a => a.Category.Equals(category, System.StringComparison.OrdinalIgnoreCase)).ToList();
                 ViewData["CurrentCategory"] = category;
             }
-            else
-            {
-                ViewData["CurrentCategory"] = "Toate";
-            }
+            else ViewData["CurrentCategory"] = "Toate";
 
-            // STRATEGY: Alegerea algoritmului de sortare
-            ISortingStrategy strategy = sortBy?.ToLower() switch
-            {
-                "title" => new SortByTitleStrategy(),
-                _ => new SortByDateStrategy()
-            };
-
+            ISortingStrategy strategy = sortBy?.ToLower() switch { "title" => new SortByTitleStrategy(), _ => new SortByDateStrategy() };
             var sortedArticles = strategy.Sort(articles);
             ViewData["CurrentSort"] = sortBy;
-
             return View(sortedArticles);
+        }
+
+        // ITERATOR: Parcurgere secvențială cu Iterator Pattern
+        public IActionResult Browse()
+        {
+            var articles = _newsService.GetAllArticles();
+            var iterator = new NewsIterator(articles);
+            var items = new List<IArticol>();
+            
+            while (!iterator.IsDone())
+            {
+                items.Add(iterator.CurrentItem());
+                iterator.Next();
+            }
+
+            return View(items);
         }
 
         [HttpPost]
@@ -51,29 +56,14 @@ namespace InfoPress.Controllers
         {
             var command = new BookmarkArticleCommand(id);
             _commandHistory.ExecuteCommand(command);
-            return Json(new { success = true, message = "Articol salvat în favorite!" });
+            return Json(new { success = true, message = "Articol salvat!" });
         }
 
         [HttpPost]
         public IActionResult UndoBookmark()
         {
             _commandHistory.Undo();
-            return Json(new { success = true, message = "Acțiune anulată cu succes!" });
-        }
-
-        public IActionResult Publish()
-        {
-            var article = new NewsArticle
-            {
-                Title = "Știre Nouă",
-                ContentText = "Conținut generat pentru testarea fluxului de publicare.",
-                Author = "Admin",
-                Category = "General",
-                CreatedDate = System.DateTime.Now
-            };
-
-            _newsService.PublishArticle(article);
-            return RedirectToAction("Index");
+            return Json(new { success = true, message = "Acțiune anulată!" });
         }
     }
 }

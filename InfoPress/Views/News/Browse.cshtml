@@ -1,0 +1,30 @@
+@model IEnumerable<InfoPress.Interfaces.IArticol>
+
+@{
+    ViewData["Title"] = "Navigare Articole (Iterator)";
+    int counter = 1;
+    int total = Model.Count();
+}
+
+<div class="container py-5">
+    <div class="mb-5 text-center">
+        <h1 class="display-5 fw-bold">Navigare Secvențială</h1>
+        <p class="text-muted">Demonstrație <strong>Iterator Pattern</strong> - parcurgerea colecției fără a expune structura internă.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        @foreach (var article in Model)
+        {
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-primary rounded-pill px-3">Articol @(counter++) din @total</span>
+                        <span class="text-muted small">@article.CreatedDate.ToShortDateString()</span>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">@article.Title</h3>
+                    <p class="text-muted mb-0">@article.ContentText</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

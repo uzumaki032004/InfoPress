@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Panou Administrare";
+    var logs = ViewData["Logs"] as List<string>;
+}
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-12 mb-4">
+            <h1 class="display-6 fw-bold border-bottom pb-3">
+                <i class="bi bi-shield-lock me-2 text-primary"></i> Panou Admin - Demonstrație Design Patterns
+            </h1>
+            <div class="alert alert-info py-2">
+                <strong>Singleton:</strong> Nume Site configurat: <u>@ViewData["SiteName"]</u>
+            </div>
+        </div>
+
+        <!-- Facade Demo -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-dark text-white fw-bold">Façade - Publicare Rapidă</div>
+                <div class="card-body">
+                    <p class="small text-muted">Apelează subsistemele de Salvare, Imagine și Notificare printr-o singură metodă.</p>
+                    <form asp-action="PublishFacade" method="post">
+                        <div class="mb-3">
+                            <input name="title" class="form-control" placeholder="Titlu..." required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea name="content" class="form-control" placeholder="Conținut..." required></textarea>
+                        </div>
+                        <button class="btn btn-primary w-100">Publică prin Façade</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Builder Demo -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-bold">Builder - Construcție Pas cu Pas</div>
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <p class="text-muted">Construiește un articol folosind un Director și un Builder Fluent.</p>
+                    <form asp-action="PublishBuilder" method="post">
+                        <button class="btn btn-outline-primary btn-lg px-5 rounded-pill">Generează Articol Builder</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Observer Logs -->
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white fw-bold">Observer - Log Notificări Abonați</div>
+                <div class="card-body">
+                    @if (logs != null && logs.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var log in logs)
+                            {
+                                <li class="list-group-item small font-monospace">@log</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-center text-muted my-3">Nicio notificare trimisă încă.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

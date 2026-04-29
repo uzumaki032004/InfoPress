@@ -15,8 +15,14 @@ namespace InfoPress.Observer
 
         public void Update(string message)
         {
-            Console.WriteLine($"[Notificare pentru {_name}]: {message}");
+            NotificationLog.Add($"[{DateTime.Now:HH:mm:ss}] Notificare trimisă către {_name}: {message}");
         }
+    }
+
+    public static class NotificationLog
+    {
+        public static List<string> Logs { get; } = new List<string>();
+        public static void Add(string log) => Logs.Add(log);
     }
 
     public class NewsSubject

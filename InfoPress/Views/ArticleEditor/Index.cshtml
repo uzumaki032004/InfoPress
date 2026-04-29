@@ -1,0 +1,56 @@
+@model InfoPress.Memento.ArticleEditor
+
+@{
+    ViewData["Title"] = "Editor Articole (Memento)";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white p-4">
+                    <h2 class="mb-0 h4"><i class="bi bi-pencil-square me-2"></i> Editor Articole - Demonstrație Memento</h2>
+                </div>
+                <div class="card-body p-5">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Message"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Save" method="post">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Titlu Articol</label>
+                            <input type="text" name="title" class="form-control form-control-lg border-2 shadow-sm" value="@Model.Title" placeholder="Introduceți titlul...">
+                        </div>
+                        <div class="mb-5">
+                            <label class="form-label fw-bold">Conținut</label>
+                            <textarea name="content" class="form-control border-2 shadow-sm" rows="10" placeholder="Scrieți conținutul aici...">@Model.ContentText</textarea>
+                        </div>
+                        
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg px-4 rounded-pill shadow">
+                                <i class="bi bi-save me-2"></i> Salvează Versiunea
+                            </button>
+                            <button type="submit" asp-action="Restore" class="btn btn-outline-dark btn-lg px-4 rounded-pill">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i> Restaurează (Undo)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="mt-4 text-center text-muted small">
+                <i class="bi bi-info-circle me-1"></i> Acest editor folosește <strong>Memento Pattern</strong> pentru a salva și restaura starea internă fără a expune detaliile de implementare.
+            </div>
+        </div>
+    </div>
+</div>
