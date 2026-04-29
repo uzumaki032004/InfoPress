@@ -24,4 +24,12 @@ namespace InfoPress.Strategy
             return articles.OrderBy(a => a.Title).ToList();
         }
     }
+
+    public class SortByViewsStrategy : ISortingStrategy
+    {
+        public List<IArticol> Sort(List<IArticol> articles)
+        {
+            return articles.OrderByDescending(a => a.ViewCount).ToList();
+        }
+    }
 }

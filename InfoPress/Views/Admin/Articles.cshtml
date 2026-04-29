@@ -1,0 +1,72 @@
+@model List<InfoPress.Models.NewsArticle>
+@{
+    ViewData["Title"] = "Gestionare Articole";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold">Articole</h1>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-plus-lg me-2"></i> Articol Nou
+        </a>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Titlu</th>
+                        <th>Categorie</th>
+                        <th>Autor</th>
+                        <th>Dată</th>
+                        <th>Vizualizări</th>
+                        <th class="text-end pe-4">Acțiuni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var article in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">@article.Title</div>
+                                @if (article.IsPremium)
+                                {
+                                    <span class="badge bg-warning text-dark x-small">Premium</span>
+                                }
+                            </td>
+                            <td><span class="badge bg-outline-primary text-primary border border-primary px-2 py-1">@article.Category</span></td>
+                            <td>@article.Author</td>
+                            <td class="text-muted small">@article.CreatedDate.ToString("dd.MM.yyyy")</td>
+                            <td><i class="bi bi-eye me-1"></i> @article.ViewCount</td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    <a asp-controller="News" asp-action="Detail" asp-route-id="@article.Id" class="btn btn-sm btn-outline-secondary" title="Vezi pe site">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@article.Id" class="btn btn-sm btn-outline-primary" title="Editează">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@article.Id" method="post" onsubmit="return confirm('Sigur ștergi acest articol?');" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Șterge">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

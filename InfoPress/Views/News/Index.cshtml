@@ -1,105 +1,139 @@
-@model IEnumerable<InfoPress.Interfaces.IArticol>
-
+@model List<InfoPress.Interfaces.IArticol>
+@using InfoPress.Models
 @{
     ViewData["Title"] = "Portal Știri";
-    string currentSort = ViewData["CurrentSort"] as string ?? "date";
-    string currentCategory = ViewData["CurrentCategory"] as string ?? "Toate";
+    var articles = Model.Cast<NewsArticle>().ToList();
+    var heroArticle = articles.FirstOrDefault();
+    var otherArticles = articles.Skip(1).ToList();
+    var trending = articles.OrderByDescending(a => a.ViewCount).Take(5).ToList();
 }
 
-<div class="container py-5">
-    <!-- Featured Hero Section -->
-    <div class="hero-section text-center shadow-sm">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <span class="badge bg-primary mb-3">InfoPress News</span>
-                <h1 class="display-3 mb-4">@(currentCategory == "Toate" ? "Informația care contează." : $"Știri: {currentCategory}")</h1>
-                <p class="lead text-muted mb-5">Analize profunde și jurnalism de elită pentru subiecte de @currentCategory.ToLower().</p>
-                
-                <!-- STRATEGY UI: Sorting Options -->
-                <div class="d-flex justify-content-center gap-3 mb-4">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-dark dropdown-toggle rounded-pill px-4" type="button" data-bs-toggle="dropdown">
-                            Sortare după: @(currentSort == "title" ? "Titlu" : "Dată")
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="?sortBy=date&category=@currentCategory">Dată (Cele mai noi)</a></li>
-                            <li><a class="dropdown-item" href="?sortBy=title&category=@currentCategory">Titlu (Alfabetic)</a></li>
-                        </ul>
+<div class="container mt-4">
+    <!-- Hero Section -->
+    @if (heroArticle != null)
+    {
+        <div class="row mb-5 animate-fade-in">
+            <div class="col-12">
+                <div class="hero-card position-relative shadow-lg border-0">
+                    <img src="@(string.IsNullOrEmpty(heroArticle.ImageUrl) ? "/images/hero-placeholder.jpg" : heroArticle.ImageUrl)" 
+                         class="w-100" style="height: 550px; object-fit: cover;" alt="@heroArticle.Title"
+                         onerror="this.src='https://images.unsplash.com/photo-1585829365234-781fdec3d4e3?w=1200&q=80'; this.onerror=null;">
+                    <div class="hero-overlay">
+                        <span class="badge bg-primary mb-3 px-3 py-2">@heroArticle.Category</span>
+                        <h1 class="display-3 fw-bold mb-3">
+                            <a asp-action="Detail" asp-route-id="@heroArticle.Id" class="text-white text-decoration-none">@heroArticle.Title</a>
+                        </h1>
+                        <p class="lead mb-4 opacity-75">@heroArticle.Summary</p>
+                        <div class="d-flex align-items-center">
+                            <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="rounded-circle me-2" width="40" height="40" alt="Author">
+                            <span class="small fw-bold">@heroArticle.Author</span>
+                            <span class="mx-2 opacity-50">•</span>
+                            <span class="small opacity-75">@heroArticle.CreatedDate.ToString("dd MMM yyyy")</span>
+                        </div>
                     </div>
-                    <button class="btn btn-dark rounded-pill px-4" onclick="undoLastAction()">Anulează Bookmark <i class="bi bi-arrow-counterclockwise"></i></button>
                 </div>
             </div>
         </div>
-    </div>
+    }
 
-    <!-- News Grid -->
-    <div id="latest" class="row g-5">
-        <div class="col-12 d-flex justify-content-between align-items-center">
-            <h2 class="mb-0 d-flex align-items-center">
-                <span class="bg-primary p-1 me-3 rounded-1" style="width: 10px; height: 35px; display: inline-block;"></span>
-                @(currentCategory == "Toate" ? "Ultimele Articole" : $"Articole din {currentCategory}")
-            </h2>
-            <span class="text-muted">@Model.Count() rezultate găsite</span>
-        </div>
-        
-        @if (!Model.Any())
-        {
-            <div class="col-12 text-center py-5">
-                <i class="bi bi-search display-1 text-muted"></i>
-                <h3 class="mt-4">Niciun articol găsit în această categorie.</h3>
-                <a asp-action="Index" class="btn btn-primary mt-3 rounded-pill">Înapoi la toate știrile</a>
+    <!-- Content Grid + Sidebar -->
+    <div class="row">
+        <!-- Main News Grid -->
+        <div class="col-lg-8">
+            <h3 class="sidebar-title mb-4">Ultimele Știri</h3>
+            <div class="row g-4">
+                @foreach (var article in otherArticles)
+                {
+                    <div class="col-md-6 animate-fade-in">
+                        <div class="card h-100 news-card rounded-4">
+                            <div class="card-img-container rounded-top-4">
+                                <img src="@(string.IsNullOrEmpty(article.ImageUrl) ? "/images/news-placeholder.jpg" : article.ImageUrl)" 
+                                     class="card-img-top" alt="@article.Title" style="height: 220px; object-fit: cover;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&q=80'; this.onerror=null;">
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <span class="text-primary small fw-bold mb-2">@article.Category.ToUpper()</span>
+                                <h4 class="card-title fw-bold mb-3 h5">
+                                    <a asp-action="Detail" asp-route-id="@article.Id" class="text-dark text-decoration-none">@article.Title</a>
+                                </h4>
+                                <p class="card-text text-muted small mb-4 text-truncate-3">@article.Summary</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <div class="small text-muted">@article.CreatedDate.ToString("dd.MM.yyyy")</div>
+                                    <a asp-action="Detail" asp-route-id="@article.Id" class="btn btn-link p-0 text-primary text-decoration-none fw-bold small">Citește mai mult <i class="bi bi-chevron-right small"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        }
-        else
-        {
-            @foreach (var article in Model)
+
+            <!-- Pagination -->
+            @if (ViewData["TotalPages"] != null && (int)ViewData["TotalPages"] > 1)
             {
-                <div class="col-lg-4 col-md-6">
-                    <article class="news-card p-4 h-100 d-flex flex-column bg-white @(article.IsPremium ? "border-primary" : "")">
-                        <div class="mb-3 d-flex justify-content-between align-items-center">
-                            <div class="d-flex gap-2 align-items-center">
-                                <span class="text-primary fw-bold small text-uppercase">@article.Category</span>
-                                @if (article.IsPremium)
-                                {
-                                    <span class="badge bg-warning text-dark shadow-sm"><i class="bi bi-star-fill"></i> PREMIUM</span>
-                                }
-                            </div>
-                            <!-- COMMAND UI: Bookmark Button -->
-                            <button class="btn btn-link p-0 text-muted hover-primary" onclick="bookmarkArticle(1)" title="Salvează articol">
-                                <i class="bi bi-bookmark-plus fs-5"></i>
-                            </button>
-                        </div>
-                        <h3 class="h4 mb-3">@article.Title</h3>
-                        <p class="text-muted text-truncate-3 mb-4 flex-grow-1">@article.ContentText</p>
-                        <div class="mt-auto pt-3 border-top d-flex align-items-center justify-content-between">
-                            <div class="small">
-                                <i class="bi bi-person-circle me-1"></i> <strong>@article.Author</strong>
-                            </div>
-                            <a href="#" class="btn btn-link link-primary text-decoration-none fw-bold small p-0">Citește tot <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </article>
-                </div>
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        @for (int i = 1; i <= (int)ViewData["TotalPages"]; i++)
+                        {
+                            <li class="page-item @(i == (int)ViewData["CurrentPage"] ? "active" : "")">
+                                <a class="page-link rounded-circle mx-1" asp-action="Index" asp-route-page="@i" asp-route-category="@ViewData["CurrentCategory"]">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
             }
-        }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4 mt-5 mt-lg-0">
+            <!-- Sorting Strategy Widget -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-3">Sortează după</h5>
+                <div class="list-group list-group-flush">
+                    <a asp-action="Index" asp-route-sortBy="date" class="list-group-item list-group-item-action border-0 rounded-3 mb-1 @(ViewData["CurrentSort"]?.ToString() == "date" ? "bg-light text-primary fw-bold" : "")">
+                        <i class="bi bi-calendar-event me-2"></i> Data publicării
+                    </a>
+                    <a asp-action="Index" asp-route-sortBy="title" class="list-group-item list-group-item-action border-0 rounded-3 mb-1 @(ViewData["CurrentSort"]?.ToString() == "title" ? "bg-light text-primary fw-bold" : "")">
+                        <i class="bi bi-sort-alpha-down me-2"></i> Titlu (A-Z)
+                    </a>
+                    <a asp-action="Index" asp-route-sortBy="views" class="list-group-item list-group-item-action border-0 rounded-3 mb-1 @(ViewData["CurrentSort"]?.ToString() == "views" ? "bg-light text-primary fw-bold" : "")">
+                        <i class="bi bi-graph-up-arrow me-2"></i> Cele mai citite
+                    </a>
+                </div>
+            </div>
+
+            <!-- Trending News Modernized -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h5 class="sidebar-title">Trending</h5>
+                <div class="mt-2">
+                    @for (int i = 0; i < trending.Count; i++)
+                    {
+                        var t = trending[i];
+                        <a asp-action="Detail" asp-route-id="@t.Id" class="trending-card">
+                            <div class="trending-number">0@(i + 1)</div>
+                            <div class="trending-content">
+                                <div class="trending-meta">@t.Category</div>
+                                <div class="trending-title">@t.Title</div>
+                                <div class="trending-views">
+                                    <i class="bi bi-eye me-1"></i> @t.ViewCount vizualizări
+                                </div>
+                            </div>
+                            <img src="@(string.IsNullOrEmpty(t.ImageUrl) ? "/images/news-placeholder.jpg" : t.ImageUrl)" 
+                                 class="trending-thumb" alt="@t.Title"
+                                 onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&q=80'; this.onerror=null;">
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- Newsletter Card -->
+            <div class="card border-0 bg-primary text-white shadow-sm rounded-4 p-4">
+                <h5 class="fw-bold mb-3">Newsletter</h5>
+                <p class="small opacity-75 mb-3">Fii la curent cu cele mai importante știri ale zilei.</p>
+                <div class="input-group mb-0">
+                    <input type="email" class="form-control rounded-start-pill border-0" placeholder="Emailul tău">
+                    <button class="btn btn-dark rounded-end-pill px-3" type="button">OK</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        function bookmarkArticle(id) {
-            fetch('/News/Bookmark/' + id, { method: 'POST' })
-                .then(r => r.json())
-                .then(data => {
-                    alert(data.message);
-                });
-        }
-
-        function undoLastAction() {
-            fetch('/News/UndoBookmark', { method: 'POST' })
-                .then(r => r.json())
-                .then(data => {
-                    alert(data.message);
-                });
-        }
-    </script>
-}

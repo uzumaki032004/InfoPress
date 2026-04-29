@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Înregistrare";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h2 class="text-center fw-bold mb-4">Cont Nou</h2>
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" name="displayName" class="form-control rounded-3" id="nameInput" placeholder="Nume Complet" required>
+                            <label for="nameInput">Nume Afișat</label>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="email" name="email" class="form-control rounded-3" id="emailInput" placeholder="nume@exemplu.ro" required>
+                            <label for="emailInput">Adresă email</label>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="password" name="password" class="form-control rounded-3" id="passInput" placeholder="Parolă" required>
+                            <label for="passInput">Parolă</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 py-3 rounded-3 fw-bold mb-3">Creează Cont</button>
+                        
+                        <div class="text-center">
+                            <span class="text-muted small">Ai deja cont? </span>
+                            <a asp-action="Login" class="text-primary small fw-bold text-decoration-none">Autentifică-te</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

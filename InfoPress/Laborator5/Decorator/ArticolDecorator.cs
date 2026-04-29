@@ -19,6 +19,7 @@ namespace InfoPress.Decorator
         public string Category { get => _articol.Category; set => _articol.Category = value; }
         public DateTime CreatedDate { get => _articol.CreatedDate; set => _articol.CreatedDate = value; }
         public bool IsPremium { get => _articol.IsPremium; set => _articol.IsPremium = value; }
+        public int ViewCount { get => _articol.ViewCount; set => _articol.ViewCount = value; }
 
         public virtual void AfiseazaArticol()
         {

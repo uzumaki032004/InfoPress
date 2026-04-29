@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Planuri Premium";
+}
+
+<div class="container mt-5 pt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Alege planul tău <span class="text-primary">Premium</span></h1>
+        <p class="lead text-muted">Accesează analize exclusive, interviuri și conținut fără reclame.</p>
+    </div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Monthly Plan -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-5 text-center">
+                    <h3 class="fw-bold">Lunar</h3>
+                    <div class="display-5 fw-bold my-4">120 <span class="fs-4 text-muted">MDL</span></div>
+                    <ul class="list-unstyled text-start mb-5">
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Toate articolele Premium</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Newsletter exclusiv</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Experiență fără reclame</li>
+                        <li class="mb-3 text-muted"><i class="bi bi-x-circle-fill text-danger me-2"></i> Reduceri la evenimente</li>
+                    </ul>
+                    <a asp-action="Checkout" asp-route-plan="Monthly" class="btn btn-outline-primary rounded-pill px-5 py-2 fw-bold w-100">Alege Planul</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Annual Plan -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden border-primary border-2" style="transform: scale(1.05);">
+                <div class="bg-primary text-white py-2 text-center small fw-bold">CEL MAI POPULAR</div>
+                <div class="card-body p-5 text-center">
+                    <h3 class="fw-bold">Anual</h3>
+                    <div class="display-5 fw-bold my-4">1200 <span class="fs-4 text-muted">MDL</span></div>
+                    <ul class="list-unstyled text-start mb-5">
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Toate articolele Premium</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Newsletter exclusiv</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Experiență fără reclame</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> 2 luni GRATUIT</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Reduceri la evenimente</li>
+                    </ul>
+                    <a asp-action="Checkout" asp-route-plan="Annual" class="btn btn-primary rounded-pill px-5 py-2 fw-bold w-100">Devino Premium</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

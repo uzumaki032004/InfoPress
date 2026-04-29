@@ -8,6 +8,7 @@ namespace InfoPress.Interfaces
         string Category { get; set; }
         DateTime CreatedDate { get; set; }
         bool IsPremium { get; set; }
+        int ViewCount { get; set; }
         void AfiseazaArticol();
     }
 }

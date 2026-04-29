@@ -1,71 +1,61 @@
 @{
-    ViewData["Title"] = "Panou Administrare";
-    var logs = ViewData["Logs"] as List<string>;
+    ViewData["Title"] = "Admin Panel";
 }
 
-<div class="container py-5">
-    <div class="row g-4">
-        <div class="col-12 mb-4">
-            <h1 class="display-6 fw-bold border-bottom pb-3">
-                <i class="bi bi-shield-lock me-2 text-primary"></i> Panou Admin - Demonstrație Design Patterns
-            </h1>
-            <div class="alert alert-info py-2">
-                <strong>Singleton:</strong> Nume Site configurat: <u>@ViewData["SiteName"]</u>
-            </div>
-        </div>
-
-        <!-- Facade Demo -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header bg-dark text-white fw-bold">Façade - Publicare Rapidă</div>
-                <div class="card-body">
-                    <p class="small text-muted">Apelează subsistemele de Salvare, Imagine și Notificare printr-o singură metodă.</p>
-                    <form asp-action="PublishFacade" method="post">
-                        <div class="mb-3">
-                            <input name="title" class="form-control" placeholder="Titlu..." required>
-                        </div>
-                        <div class="mb-3">
-                            <textarea name="content" class="form-control" placeholder="Conținut..." required></textarea>
-                        </div>
-                        <button class="btn btn-primary w-100">Publică prin Façade</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Builder Demo -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-header bg-primary text-white fw-bold">Builder - Construcție Pas cu Pas</div>
-                <div class="card-body text-center d-flex flex-column justify-content-center">
-                    <p class="text-muted">Construiește un articol folosind un Director și un Builder Fluent.</p>
-                    <form asp-action="PublishBuilder" method="post">
-                        <button class="btn btn-outline-primary btn-lg px-5 rounded-pill">Generează Articol Builder</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Observer Logs -->
+<div class="container mt-4">
+    <div class="row mb-5">
         <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-secondary text-white fw-bold">Observer - Log Notificări Abonați</div>
+            <h1 class="fw-bold">Panou Administrare</h1>
+            <p class="text-muted">Gestionare conținut, utilizatori și monitorizare sistem.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Articles Card -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
                 <div class="card-body">
-                    @if (logs != null && logs.Any())
-                    {
-                        <ul class="list-group list-group-flush">
-                            @foreach (var log in logs)
-                            {
-                                <li class="list-group-item small font-monospace">@log</li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p class="text-center text-muted my-3">Nicio notificare trimisă încă.</p>
-                    }
+                    <div class="display-4 text-primary mb-3">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </div>
+                    <h3 class="fw-bold">Articole</h3>
+                    <p class="text-muted">Creează, editează sau șterge știri.</p>
+                    <a asp-action="Articles" class="btn btn-primary rounded-pill px-4">Gestionare</a>
                 </div>
             </div>
         </div>
+
+        <!-- Users Card -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
+                <div class="card-body">
+                    <div class="display-4 text-success mb-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3 class="fw-bold">Utilizatori</h3>
+                    <p class="text-muted">Vezi lista utilizatorilor înregistrați.</p>
+                    <a asp-action="Users" class="btn btn-success rounded-pill px-4">Vezi Lista</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Card -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
+                <div class="card-body">
+                    <div class="display-4 text-info mb-3">
+                        <i class="bi bi-journal-text"></i>
+                    </div>
+                    <h3 class="fw-bold">Loguri Sistem</h3>
+                    <p class="text-muted">Monitorizare Observer Pattern.</p>
+                    <a asp-action="Logs" class="btn btn-info rounded-pill px-4">Vezi Loguri</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 p-4 bg-light rounded-4 border border-info border-opacity-25">
+        <h5 class="fw-bold text-info"><i class="bi bi-gear-fill me-2"></i>Configurație Site (Singleton)</h5>
+        <p class="mb-0">Nume site activ: <strong>@ViewData["SiteName"]</strong></p>
     </div>
 </div>

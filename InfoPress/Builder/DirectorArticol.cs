@@ -4,18 +4,29 @@ namespace InfoPress.Builder
     {
         public void ConstruiesteArticolStire(IArticolBuilder builder)
         {
-            builder.SetTitlu("Știre importantă")
-                   .SetAutor("Admin")
-                   .SetContinut("Acesta este conținutul articolului construit pas cu pas.")
+            builder.SetTitlu("Știre de ultimă oră")
+                   .SetAutor("Redacția InfoPress")
+                   .SetContinut("Introducere știre... [Conținut complet]")
                    .SetCategorie("Actualitate")
-                   .SetImagine("stire.jpg");
+                   .SetImagine("/images/stire-default.jpg");
         }
 
         public void ConstruiesteArticolSportiv(IArticolBuilder builder)
         {
-            builder.SetTitlu("Rezultate meciuri")
+            builder.SetTitlu("Rezultate Sportive")
                    .SetAutor("Redacția Sport")
-                   .SetCategorie("Sport");
+                   .SetContinut("Meciul de ieri a fost... [Conținut sport]")
+                   .SetCategorie("Sport")
+                   .SetImagine("/images/sport-default.jpg");
+        }
+
+        public void ConstruiesteArticolEditorial(IArticolBuilder builder)
+        {
+            builder.SetTitlu("Opinie: Viitorul Presei")
+                   .SetAutor("Editor Șef")
+                   .SetContinut("În contextul actual... [Conținut editorial]")
+                   .SetCategorie("Editorial")
+                   .SetImagine("/images/editorial-default.jpg");
         }
     }
 }

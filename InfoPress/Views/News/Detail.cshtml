@@ -1,0 +1,166 @@
+@model InfoPress.Models.NewsArticle
+@using InfoPress.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using InfoPress.Models
+@inject UserManager<AppUser> UserManager
+@inject SignInManager<AppUser> SignInManager
+
+@{
+    ViewData["Title"] = Model.Title;
+    var related = ViewData["Related"] as List<InfoPress.Models.NewsArticle>;
+    
+    var user = await UserManager.GetUserAsync(User);
+    bool hasAccess = !Model.IsPremium || (user != null && user.IsPremiumSubscriber);
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <!-- Article Header -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Acasă</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-route-category="@Model.Category">@Model.Category</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Articol</li>
+                </ol>
+            </nav>
+
+            <div class="mb-4">
+                <span class="badge bg-primary mb-2">@Model.Category</span>
+                @if (Model.IsPremium)
+                {
+                    <span class="badge bg-warning text-dark mb-2 ms-1"><i class="bi bi-star-fill me-1"></i> EXCLUSIV PREMIUM</span>
+                }
+                <h1 class="display-4 fw-bold serif-font">@Model.Title</h1>
+                
+                <div class="d-flex align-items-center text-muted mt-3 mb-4">
+                    <div class="me-4">
+                        <i class="bi bi-person-fill me-1"></i> @Model.Author
+                    </div>
+                    <div class="me-4">
+                        <i class="bi bi-calendar3 me-1"></i> @Model.CreatedDate.ToString("dd MMM yyyy")
+                    </div>
+                    <div>
+                        <i class="bi bi-clock me-1"></i> @Model.ReadingTimeMinutes min citire
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Image -->
+            <div class="hero-image-container mb-5">
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/news-placeholder.jpg" : Model.ImageUrl)" 
+                     class="img-fluid rounded-4 shadow-sm w-100 article-hero-img" 
+                     alt="@Model.Title"
+                     style="max-height: 500px; object-fit: cover;"
+                     onerror="this.src='https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1200&q=80'; this.onerror=null;">
+            </div>
+
+            <!-- Article Content -->
+            <div class="article-body mb-5 position-relative">
+                <!-- Base Information (Summary) -->
+                <p class="lead fw-bold text-dark mb-4 p-4 bg-light rounded-4 border-start border-4 border-primary">
+                    @Model.Summary
+                </p>
+                
+                @if (hasAccess)
+                {
+                    <div class="content-text fs-5" style="line-height: 1.8;">
+                        @Model.ContentText
+                    </div>
+                }
+                else
+                {
+                    <!-- Blurred Content for Teasing -->
+                    <div class="premium-teaser position-relative">
+                        <div class="content-text fs-5" style="line-height: 1.8; filter: blur(8px); pointer-events: none; user-select: none; opacity: 0.3;">
+                            @Model.ContentText
+                            <br>
+                            @Model.ContentText
+                        </div>
+                        
+                        <!-- Premium Wall Overlay -->
+                        <div class="premium-overlay-card text-center p-5 rounded-4 shadow-lg border border-warning border-opacity-50 bg-white">
+                            <div class="display-6 fw-bold mb-3 text-dark">
+                                <i class="bi bi-lock-fill text-warning"></i> Conținut Exclusiv
+                            </div>
+                            <p class="lead mb-4">Ești la un pas de informații care contează. Abonează-te la **InfoPress Premium** pentru a debloca restul acestui articol și mii de alte analize profunde.</p>
+                            
+                            <div class="d-flex justify-content-center gap-3">
+                                <a asp-controller="Subscription" asp-action="Index" class="btn btn-warning rounded-pill px-5 py-3 fw-bold shadow">
+                                    VEZI PLANURI (MDL)
+                                </a>
+                                @if (!SignInManager.IsSignedIn(User))
+                                {
+                                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-dark rounded-pill px-5 py-3">
+                                        AUTENTIFICARE
+                                    </a>
+                                }
+                            </div>
+                            <p class="mt-4 small text-muted">Deja ai abonament? Autentifică-te pentru acces instant.</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <hr class="my-5">
+
+            <!-- Related Articles -->
+            @if (related != null && related.Any())
+            {
+                <div class="related-section mb-5">
+                    <h3 class="fw-bold mb-4">Articole înrudite</h3>
+                    <div class="row g-4">
+                        @foreach (var item in related)
+                        {
+                            <div class="col-md-4">
+                                <div class="card h-100 border-0 shadow-sm rounded-3">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/images/news-placeholder.jpg" : item.ImageUrl)" 
+                                         class="card-img-top rounded-top-3" alt="@item.Title" style="height: 160px; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title fs-6 fw-bold">
+                                            <a asp-action="Detail" asp-route-id="@item.Id" class="text-dark text-decoration-none">@item.Title</a>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex justify-content-between mb-5">
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-2"></i> Înapoi la listă
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .serif-font { font-family: 'Playfair Display', serif; }
+        .article-body { max-width: 760px; margin: 0 auto; }
+        
+        .premium-teaser {
+            min-height: 400px;
+            overflow: hidden;
+        }
+
+        .premium-overlay-card {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            margin: 0 1rem;
+        }
+
+        .content-text {
+            color: #334155;
+            text-align: justify;
+        }
+    </style>
+}
