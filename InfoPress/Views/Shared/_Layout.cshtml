@@ -52,13 +52,35 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="News" asp-action="Index">Acasă</a>
+                            <a class="nav-link fw-semibold" asp-controller="News" asp-action="Index">Acasă</a>
                         </li>
-                        @foreach (var cat in CategoryManager.GetFlatCategories())
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold text-primary" asp-controller="News" asp-action="Browse"><i class="bi bi-book-half me-1"></i> Sequential Reader</a>
+                        </li>
+                        @foreach (var sub in CategoryManager.GetMenuHierarchy().Subcategorii)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="News" asp-action="Index" asp-route-category="@cat">@cat</a>
-                            </li>
+                            if (sub is InfoPress.Composite.CategorieCompusa comp)
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle fw-semibold text-dark" href="#" id="navbarDropdown_@comp.Nume" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @comp.Nume
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow rounded-3 animate-fade-in mt-2" aria-labelledby="navbarDropdown_@comp.Nume">
+                                        @foreach (var child in comp.Subcategorii)
+                                        {
+                                            <li>
+                                                <a class="dropdown-item py-2 px-3 fw-medium text-muted" asp-controller="News" asp-action="Index" asp-route-category="@child.Nume">@child.Nume</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-semibold text-dark" asp-controller="News" asp-action="Index" asp-route-category="@sub.Nume">@sub.Nume</a>
+                                </li>
+                            }
                         }
                     </ul>
 

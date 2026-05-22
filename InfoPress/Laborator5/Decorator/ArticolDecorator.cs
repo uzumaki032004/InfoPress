@@ -21,6 +21,8 @@ namespace InfoPress.Decorator
         public bool IsPremium { get => _articol.IsPremium; set => _articol.IsPremium = value; }
         public int ViewCount { get => _articol.ViewCount; set => _articol.ViewCount = value; }
 
+        public IArticol WrappedArticle => _articol;
+
         public virtual void AfiseazaArticol()
         {
             _articol.AfiseazaArticol();

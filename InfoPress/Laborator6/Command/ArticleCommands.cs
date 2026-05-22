@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 using System.Collections.Generic;
 
 namespace InfoPress.Command
@@ -10,35 +12,92 @@ namespace InfoPress.Command
 
     public class BookmarkArticleCommand : ICommand
     {
-        private int _articleId;
-        public BookmarkArticleCommand(int articleId) => _articleId = articleId;
+        private readonly int _articleId;
+        private readonly ISession _session;
+        private const string BookmarkSessionKey = "UserBookmarks";
+
+        public BookmarkArticleCommand(int articleId, ISession session)
+        {
+            _articleId = articleId;
+            _session = session;
+        }
+
+        private List<int> GetBookmarks()
+        {
+            var json = _session.GetString(BookmarkSessionKey);
+            if (string.IsNullOrEmpty(json)) return new List<int>();
+            return JsonSerializer.Deserialize<List<int>>(json) ?? new List<int>();
+        }
+
+        private void SaveBookmarks(List<int> list)
+        {
+            _session.SetString(BookmarkSessionKey, JsonSerializer.Serialize(list));
+        }
 
         public void Execute()
         {
-            System.Console.WriteLine($"[Comandă] Articolul {_articleId} a fost adăugat la favorite.");
+            var bookmarks = GetBookmarks();
+            if (!bookmarks.Contains(_articleId))
+            {
+                bookmarks.Add(_articleId);
+                SaveBookmarks(bookmarks);
+            }
+            System.Console.WriteLine($"[Comandă Session] Articolul {_articleId} adăugat la favorite.");
         }
 
         public void Undo()
         {
-            System.Console.WriteLine($"[Comandă] Articolul {_articleId} a fost eliminat de la favorite (Undo).");
+            var bookmarks = GetBookmarks();
+            if (bookmarks.Contains(_articleId))
+            {
+                bookmarks.Remove(_articleId);
+                SaveBookmarks(bookmarks);
+            }
+            System.Console.WriteLine($"[Comandă Session] Articolul {_articleId} eliminat de la favorite (Undo).");
         }
     }
 
     public class CommandHistory
     {
-        private Stack<ICommand> _history = new Stack<ICommand>();
+        private readonly ISession _session;
+        private const string HistorySessionKey = "BookmarkCommandHistory";
 
-        public void ExecuteCommand(ICommand command)
+        public CommandHistory(ISession session)
+        {
+            _session = session;
+        }
+
+        private List<int> GetHistory()
+        {
+            var json = _session.GetString(HistorySessionKey);
+            if (string.IsNullOrEmpty(json)) return new List<int>();
+            return JsonSerializer.Deserialize<List<int>>(json) ?? new List<int>();
+        }
+
+        private void SaveHistory(List<int> history)
+        {
+            _session.SetString(HistorySessionKey, JsonSerializer.Serialize(history));
+        }
+
+        public void ExecuteCommand(ICommand command, int articleId)
         {
             command.Execute();
-            _history.Push(command);
+            var history = GetHistory();
+            history.Add(articleId);
+            SaveHistory(history);
         }
 
         public void Undo()
         {
-            if (_history.Count > 0)
+            var history = GetHistory();
+            if (history.Count > 0)
             {
-                _history.Pop().Undo();
+                int lastArticleId = history[history.Count - 1];
+                history.RemoveAt(history.Count - 1);
+                SaveHistory(history);
+
+                var undoCommand = new BookmarkArticleCommand(lastArticleId, _session);
+                undoCommand.Undo();
             }
         }
     }

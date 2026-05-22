@@ -1,17 +1,10 @@
 using InfoPress.Interfaces;
 using InfoPress.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace InfoPress.Proxy
 {
-    // Real Subject
-    public class RealNewsService : INewsService
-    {
-        public List<IArticol> GetAllArticles() => new List<IArticol>();
-        public IArticol GetArticleById(int id) => null;
-        public void PublishArticle(NewsArticle article) { }
-    }
-
     // Protection Proxy
     public class NewsAccessProxy : INewsService
     {
@@ -24,22 +17,51 @@ namespace InfoPress.Proxy
             _userRole = userRole;
         }
 
-        public List<IArticol> GetAllArticles()
+        public Task<List<IArticol>> GetAllArticlesAsync(string? category = null, string? search = null, int page = 1, int pageSize = 9)
         {
-            return _realService.GetAllArticles();
+            return _realService.GetAllArticlesAsync(category, search, page, pageSize);
         }
 
-        public IArticol GetArticleById(int id)
+        public Task<int> GetTotalCountAsync(string? category = null, string? search = null)
         {
-            return _realService.GetArticleById(id);
+            return _realService.GetTotalCountAsync(category, search);
         }
 
-        public void PublishArticle(NewsArticle article)
+        public Task<IArticol?> GetArticleByIdAsync(int id)
+        {
+            return _realService.GetArticleByIdAsync(id);
+        }
+
+        public Task<List<IArticol>> GetRelatedArticlesAsync(string category, int excludeId, int count = 3)
+        {
+            return _realService.GetRelatedArticlesAsync(category, excludeId, count);
+        }
+
+        public Task PublishArticleAsync(NewsArticle article)
         {
             if (_userRole == "Admin")
             {
-                _realService.PublishArticle(article);
+                return _realService.PublishArticleAsync(article);
             }
+            throw new System.UnauthorizedAccessException("Doar administratorii pot publica articole!");
+        }
+
+        public Task UpdateArticleAsync(NewsArticle article)
+        {
+            if (_userRole == "Admin")
+            {
+                return _realService.UpdateArticleAsync(article);
+            }
+            throw new System.UnauthorizedAccessException("Doar administratorii pot edita articole!");
+        }
+
+        public Task DeleteArticleAsync(int id)
+        {
+            if (_userRole == "Admin")
+            {
+                return _realService.DeleteArticleAsync(id);
+            }
+            throw new System.UnauthorizedAccessException("Doar administratorii pot șterge articole!");
         }
     }
 }

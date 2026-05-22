@@ -1,8 +1,10 @@
-﻿namespace InfoPress.Composite
+namespace InfoPress.Composite
 {
     public class CategorieSimpla : ICategorie
     {
         private string nume;
+
+        public string Nume => nume;
 
         public CategorieSimpla(string nume)
         {

@@ -1,5 +1,6 @@
 using InfoPress.Models;
 using InfoPress.Interfaces;
+using System.Threading.Tasks;
 
 namespace InfoPress.Facade
 {
@@ -15,10 +16,10 @@ namespace InfoPress.Facade
             _newsService = newsService;
         }
 
-        public void PublicaArticolComplet(NewsArticle articol)
+        public async Task PublicaArticolCompletAsync(NewsArticle articol)
         {
             // 1. Salvare în baza de date (sau serviciu)
-            _newsService.PublishArticle(articol);
+            await _newsService.PublishArticleAsync(articol);
             
             // 2. Procesare imagini (subsistem complex)
             _imagineService.IncarcaImagine();

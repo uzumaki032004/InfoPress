@@ -1,30 +1,109 @@
-@model IEnumerable<InfoPress.Interfaces.IArticol>
+@model InfoPress.Interfaces.IArticol
+@using InfoPress.Models
+@using InfoPress.Decorator
 
 @{
-    ViewData["Title"] = "Navigare Articole (Iterator)";
-    int counter = 1;
-    int total = Model.Count();
+    ViewData["Title"] = "Lectură Secvențială (Iterator)";
+    int index = (int)(ViewData["Index"] ?? 0);
+    int total = (int)(ViewData["Total"] ?? 0);
+    bool hasNext = (bool)(ViewData["HasNext"] ?? false);
+    bool hasPrev = (bool)(ViewData["HasPrev"] ?? false);
 }
 
-<div class="container py-5">
+<div class="container py-5 animate-fade-in">
     <div class="mb-5 text-center">
-        <h1 class="display-5 fw-bold">Navigare Secvențială</h1>
-        <p class="text-muted">Demonstrație <strong>Iterator Pattern</strong> - parcurgerea colecției fără a expune structura internă.</p>
+        <span class="badge bg-secondary mb-2 px-3 py-2 text-uppercase">Iterator Pattern</span>
+        <h1 class="display-4 fw-bold serif-font">Sequential Reader</h1>
+        <p class="text-muted lead">Parcurge articolele unul câte unul într-o experiență de lectură fluidă și curată.</p>
     </div>
 
-    <div class="row g-4 justify-content-center">
-        @foreach (var article in Model)
-        {
+    @if (Model == null)
+    {
+        <div class="alert alert-info text-center py-5 rounded-4 shadow-sm">
+            <i class="bi bi-info-circle display-4 text-primary mb-3 d-block"></i>
+            <h4 class="fw-bold">Nu există articole disponibile</h4>
+            <p class="mb-0 text-muted">Baza de date este momentan goală. Adaugă câteva articole din panoul de administrare.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-primary rounded-pill px-3">Articol @(counter++) din @total</span>
-                        <span class="text-muted small">@article.CreatedDate.ToShortDateString()</span>
+                <!-- Progress bar -->
+                <div class="progress mb-4 rounded-pill" style="height: 6px;">
+                    <div class="progress-bar bg-primary" role="progressbar" 
+                         style="width: @(((double)(index + 1) / total) * 100)%;" 
+                         aria-valuenow="@(index + 1)" aria-valuemin="1" aria-valuemax="@total"></div>
+                </div>
+
+                <!-- Single Article Container -->
+                <div class="card border-0 shadow-lg rounded-4 p-5 mb-4 position-relative overflow-hidden">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="badge bg-primary rounded-pill px-3 py-2">Articol @(index + 1) din @total</span>
+                        <span class="text-muted small fw-medium"><i class="bi bi-calendar3 me-1"></i> @Model.CreatedDate.ToString("dd MMM yyyy")</span>
                     </div>
-                    <h3 class="h5 fw-bold mb-3">@article.Title</h3>
-                    <p class="text-muted mb-0">@article.ContentText</p>
+
+                    <div class="mb-4">
+                        <span class="badge bg-light text-primary border border-primary border-opacity-25 px-3 py-2 mb-3 text-uppercase">@Model.Category</span>
+                        @if (Model.IsPremium)
+                        {
+                            <span class="badge bg-warning text-dark px-3 py-2 mb-3 ms-2"><i class="bi bi-star-fill me-1"></i> EXCLUSIV PREMIUM</span>
+                        }
+                        
+                        <!-- If it has premium decorator visual check -->
+                        @if (Model is PremiumArticolDecorator)
+                        {
+                            <div class="alert alert-warning border-0 rounded-3 mb-3 p-2 small">
+                                <i class="bi bi-shield-lock-fill me-2"></i> Acest articol este protejat la nivel de **Decorator** și **Proxy**!
+                            </div>
+                        }
+
+                        <h2 class="display-6 fw-bold serif-font text-dark leading-tight">@Model.Title</h2>
+                    </div>
+
+                    <div class="article-content fs-5 text-muted mb-5" style="line-height: 1.8; text-align: justify;">
+                        @Model.ContentText
+                    </div>
+
+                    <div class="border-top pt-4 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold" style="width: 48px; height: 48px;">
+                                @Model.Author.Substring(0, Math.Min(2, Model.Author.Length)).ToUpper()
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">@Model.Author</h6>
+                                <span class="small text-muted">Reporter InfoPress</span>
+                            </div>
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-eye me-1"></i> @Model.ViewCount vizualizări
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="d-flex justify-content-between align-items-center px-2">
+                    <a asp-action="Browse" asp-route-index="@(index - 1)" 
+                       class="btn btn-outline-dark rounded-pill px-4 py-2 fw-medium shadow-sm @(hasPrev ? "" : "disabled")">
+                        <i class="bi bi-arrow-left me-2"></i> Precedentul
+                    </a>
+                    
+                    <span class="fw-bold text-muted">Pasul @(index + 1) / @total</span>
+
+                    <a asp-action="Browse" asp-route-index="@(index + 1)" 
+                       class="btn btn-primary rounded-pill px-4 py-2 fw-medium shadow-sm @(hasNext ? "" : "disabled")">
+                        Următorul <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
-        }
-    </div>
+        </div>
+    }
 </div>
+
+@section Styles {
+    <style>
+        .serif-font { font-family: 'Playfair Display', serif; }
+        .card { transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important; }
+    </style>
+}

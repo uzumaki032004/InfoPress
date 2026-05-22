@@ -2,8 +2,11 @@
 @using InfoPress.Interfaces
 @using Microsoft.AspNetCore.Identity
 @using InfoPress.Models
+@using Microsoft.AspNetCore.Http
+@using System.Text.Json
 @inject UserManager<AppUser> UserManager
 @inject SignInManager<AppUser> SignInManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = Model.Title;
@@ -11,6 +14,11 @@
     
     var user = await UserManager.GetUserAsync(User);
     bool hasAccess = !Model.IsPremium || (user != null && user.IsPremiumSubscriber);
+
+    var session = HttpContextAccessor.HttpContext?.Session;
+    var bookmarkJson = session?.GetString("UserBookmarks");
+    var bookmarks = string.IsNullOrEmpty(bookmarkJson) ? new List<int>() : JsonSerializer.Deserialize<List<int>>(bookmarkJson) ?? new List<int>();
+    bool isBookmarked = bookmarks.Contains(Model.Id);
 }
 
 <div class="container mt-4">
@@ -40,8 +48,23 @@
                     <div class="me-4">
                         <i class="bi bi-calendar3 me-1"></i> @Model.CreatedDate.ToString("dd MMM yyyy")
                     </div>
-                    <div>
+                    <div class="me-4">
                         <i class="bi bi-clock me-1"></i> @Model.ReadingTimeMinutes min citire
+                    </div>
+                    <div class="ms-auto d-flex align-items-center gap-2">
+                        <button id="bookmarkBtn" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm shadow-sm" onclick="toggleBookmark(@Model.Id)">
+                            @if (isBookmarked)
+                            {
+                                <i class="bi bi-bookmark-check-fill me-1"></i> <span>Salvat!</span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-bookmark me-1"></i> <span>Salvează</span>
+                            }
+                        </button>
+                        <button id="undoBtn" class="btn btn-outline-secondary rounded-pill px-3 py-1 btn-sm shadow-sm @(isBookmarked ? "" : "d-none")" onclick="undoBookmark()">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Anulează (Undo)
+                        </button>
                     </div>
                 </div>
             </div>
@@ -163,4 +186,26 @@
             text-align: justify;
         }
     </style>
+}
+
+@section Scripts {
+    <script>
+        function toggleBookmark(articleId) {
+            $.post('/News/Bookmark', { id: articleId }, function(data) {
+                if (data.success) {
+                    $('#bookmarkBtn').html('<i class="bi bi-bookmark-check-fill me-1"></i> <span>Salvat!</span>');
+                    $('#undoBtn').removeClass('d-none');
+                }
+            });
+        }
+
+        function undoBookmark() {
+            $.post('/News/UndoBookmark', function(data) {
+                if (data.success) {
+                    $('#bookmarkBtn').html('<i class="bi bi-bookmark me-1"></i> <span>Salvează</span>');
+                    $('#undoBtn').addClass('d-none');
+                }
+            });
+        }
+    </script>
 }

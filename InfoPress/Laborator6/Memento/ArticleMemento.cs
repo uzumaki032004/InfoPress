@@ -3,8 +3,10 @@ namespace InfoPress.Memento
     // Memento
     public class ArticleMemento
     {
-        public string Title { get; private set; }
-        public string ContentText { get; private set; }
+        public string Title { get; set; } = "";
+        public string ContentText { get; set; } = "";
+
+        public ArticleMemento() { }
 
         public ArticleMemento(string title, string content)
         {

@@ -2,7 +2,7 @@ namespace InfoPress.Singleton
 {
     public sealed class ManagerConfigurare
     {
-        private static ManagerConfigurare _instance = null;
+        private static volatile ManagerConfigurare _instance = null;
         private static readonly object _lock = new object();
 
         private ManagerConfigurare()

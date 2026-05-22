@@ -14,7 +14,12 @@ namespace InfoPress.Helpers
             stiri.Adauga(new CategorieSimpla("Economie"));
             stiri.Adauga(new CategorieSimpla("Tehnologie"));
             
+            var divertisment = new CategorieCompusa("Divertisment");
+            divertisment.Adauga(new CategorieSimpla("Sport"));
+            divertisment.Adauga(new CategorieSimpla("Editorial"));
+
             menu.Adauga(stiri);
+            menu.Adauga(divertisment);
             
             return menu;
         }

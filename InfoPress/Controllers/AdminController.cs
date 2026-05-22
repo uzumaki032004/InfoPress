@@ -7,23 +7,24 @@ using InfoPress.Facade;
 using InfoPress.Builder;
 using InfoPress.Singleton;
 using InfoPress.Observer;
-using InfoPress.Repositories;
 using InfoPress.DTO;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
+using System.IO;
 
 namespace InfoPress.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly IArticleRepository _repository;
+        private readonly INewsService _newsService;
         private readonly UserManager<AppUser> _userManager;
-        private readonly NewsSubject _newsSubject;
 
-        public AdminController(IArticleRepository repository, UserManager<AppUser> userManager, NewsSubject newsSubject)
+        public AdminController(INewsService newsService, UserManager<AppUser> userManager)
         {
-            _repository = repository;
+            _newsService = newsService;
             _userManager = userManager;
-            _newsSubject = newsSubject;
         }
 
         public IActionResult Index()
@@ -34,8 +35,16 @@ namespace InfoPress.Controllers
 
         public async Task<IActionResult> Articles()
         {
-            var articles = await _repository.GetAllAsync(pageSize: 100);
-            return View(articles);
+            var articles = await _newsService.GetAllArticlesAsync(pageSize: 100);
+            
+            // Map back to NewsArticles for the View (unwrapping decorated premium ones if necessary)
+            var mappedArticles = articles.Select(a => {
+                if (a is NewsArticle na) return na;
+                if (a is InfoPress.Decorator.ArticolDecorator dec && dec.WrappedArticle is NewsArticle wrapped) return wrapped;
+                return null;
+            }).Where(a => a != null).Cast<NewsArticle>().ToList();
+
+            return View(mappedArticles);
         }
 
         [HttpGet]
@@ -75,10 +84,11 @@ namespace InfoPress.Controllers
                     article.ImageUrl = "/uploads/" + uniqueFileName;
                 }
 
-                await _repository.CreateAsync(article);
-                _newsSubject.Notify($"Admin a creat articolul: {article.Title}");
+                // FACADE Pattern for complete article publishing
+                var facade = new PublicareArticolFacade(_newsService);
+                await facade.PublicaArticolCompletAsync(article);
                 
-                TempData["Message"] = "Articol creat cu succes!";
+                TempData["Message"] = "Articol publicat cu succes prin Facade!";
                 return RedirectToAction("Articles");
             }
             return View(dto);
@@ -87,7 +97,15 @@ namespace InfoPress.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var article = await _repository.GetByIdAsync(id);
+            var articleInterface = await _newsService.GetArticleByIdAsync(id);
+            if (articleInterface == null) return NotFound();
+
+            NewsArticle? article = articleInterface as NewsArticle;
+            if (article == null && articleInterface is InfoPress.Decorator.ArticolDecorator dec)
+            {
+                article = dec.WrappedArticle as NewsArticle;
+            }
+
             if (article == null) return NotFound();
 
             var dto = new ArticleCreateDto
@@ -108,7 +126,15 @@ namespace InfoPress.Controllers
         {
             if (ModelState.IsValid)
             {
-                var article = await _repository.GetByIdAsync(dto.Id);
+                var articleInterface = await _newsService.GetArticleByIdAsync(dto.Id);
+                if (articleInterface == null) return NotFound();
+
+                NewsArticle? article = articleInterface as NewsArticle;
+                if (article == null && articleInterface is InfoPress.Decorator.ArticolDecorator dec)
+                {
+                    article = dec.WrappedArticle as NewsArticle;
+                }
+
                 if (article == null) return NotFound();
 
                 article.Title = dto.Title;
@@ -131,8 +157,7 @@ namespace InfoPress.Controllers
                     article.ImageUrl = "/uploads/" + uniqueFileName;
                 }
 
-                await _repository.UpdateAsync(article);
-                _newsSubject.Notify($"Admin a editat articolul: {article.Title}");
+                await _newsService.UpdateArticleAsync(article);
                 
                 TempData["Message"] = "Articol actualizat!";
                 return RedirectToAction("Articles");
@@ -143,7 +168,7 @@ namespace InfoPress.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _repository.DeleteAsync(id);
+            await _newsService.DeleteArticleAsync(id);
             TempData["Message"] = "Articol șters!";
             return RedirectToAction("Articles");
         }
@@ -167,7 +192,8 @@ namespace InfoPress.Controllers
             var director = new DirectorArticol();
 
             if (type == "Stire") director.ConstruiesteArticolStire(builder);
-            else if (type == "Editorial") director.ConstruiesteArticolEditorial(builder); // Assume this exists
+            else if (type == "Sport") director.ConstruiesteArticolSportiv(builder);
+            else if (type == "Editorial") director.ConstruiesteArticolEditorial(builder);
             else director.ConstruiesteArticolStire(builder);
 
             var result = builder.GetArticol();

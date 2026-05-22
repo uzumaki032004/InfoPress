@@ -38,6 +38,11 @@ builder.Services.AddScoped<INewsService>(sp => {
     return new NewsAccessProxy(realService, role);
 });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -69,6 +74,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthentication(); // OBLIGATORIU înainte de UseAuthorization
 app.UseAuthorization();
 
